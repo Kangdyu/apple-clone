@@ -33,6 +33,7 @@ strong {
     width: 100%;
     height: 44px;
     padding: 0 16px;
+    z-index: 10;
 }
 
 .local-nav {
@@ -43,6 +44,7 @@ strong {
     height: 52px;
     border-bottom: 1px solid #dddddd;
     padding: 0 16px;
+    z-index: 10;
 }
 
 .global-nav__links,
@@ -75,13 +77,15 @@ strong {
 .scroll-section {
     padding-top: 50vh;
     box-sizing: border-box;
-    border: 5px solid red;
 }
 
 .title {
+    position: relative;
+    top: -10vh;
     font-size: 4rem;
     text-align: center;
     font-weight: bold;
+    z-index: 10;
 }
 
 .main-message {
@@ -124,6 +128,7 @@ strong {
 .desc-message {
     width: 50%;
     font-weight: bold;
+    opacity: 0;
 }
 
 .pin {
@@ -177,6 +182,17 @@ strong {
     position: fixed;
     left: 0;
     width: 100%;
+}
+
+.sticky-elem-canvas {
+    top: 0;
+    height: 100%;
+}
+
+.sticky-elem-canvas canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
 
 body#show-scene-0 #scroll-section-0 .sticky-elem,
