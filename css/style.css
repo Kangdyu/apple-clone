@@ -88,8 +88,10 @@ strong {
     display: flex;
     justify-content: center;
     align-items: center;
+    top: 35vh;
     height: 3em;
     font-size: 2.5rem;
+    opacity: 0;
 }
 
 .main-message p {
@@ -130,6 +132,16 @@ strong {
     background-color: rgb(29, 29, 31);
 }
 
+#scroll-section-2 .b {
+    top: 10%;
+    left: 40%;
+}
+
+#scroll-section-2 .c {
+    top: 15%;
+    left: 45%;
+}
+
 .mid-message {
     max-width: 1000px;
     margin: 0 auto;
@@ -163,15 +175,14 @@ strong {
 .sticky-elem {
     display: none;
     position: fixed;
-    top: 0;
     left: 0;
     width: 100%;
 }
 
+body#show-scene-0 #scroll-section-0 .sticky-elem,
 body#show-scene-1 #scroll-section-1 .sticky-elem,
 body#show-scene-2 #scroll-section-2 .sticky-elem,
-body#show-scene-3 #scroll-section-3 .sticky-elem,
-body#show-scene-4 #scroll-section-4 .sticky-elem {
+body#show-scene-3 #scroll-section-3 .sticky-elem {
     display: block;
 }
 
@@ -198,6 +209,15 @@ body#show-scene-4 #scroll-section-4 .sticky-elem {
 
     .desc-message {
         width: 20%;
+    }
+
+    #scroll-section-2 .b {
+        top: 20%;
+        left: 53%;
+    }
+
+    #scroll-section-2 .c {
+        left: 55%;
     }
 
     .mid-message {
