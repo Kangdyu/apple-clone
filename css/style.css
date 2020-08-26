@@ -47,6 +47,13 @@ strong {
     z-index: 10;
 }
 
+.local-nav-sticky .local-nav {
+    position: fixed;
+    top: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: saturate(180%) blur(15px);
+}
+
 .global-nav__links,
 .local-nav__links {
     display: flex;
@@ -75,6 +82,7 @@ strong {
 }
 
 .scroll-section {
+    position: relative;
     padding-top: 50vh;
     box-sizing: border-box;
 }
@@ -85,7 +93,7 @@ strong {
     font-size: 4rem;
     text-align: center;
     font-weight: bold;
-    z-index: 10;
+    z-index: 5;
 }
 
 .main-message {
@@ -163,7 +171,7 @@ strong {
 
 .canvas-caption {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: -5em auto 0;
     padding: 0 16px;
     color: #888888;
     text-align: left;
@@ -195,11 +203,22 @@ strong {
     left: 50%;
 }
 
+.image-blend-canvas.sticky {
+    position: fixed;
+    top: 0;
+}
+
 body#show-scene-0 #scroll-section-0 .sticky-elem,
 body#show-scene-1 #scroll-section-1 .sticky-elem,
 body#show-scene-2 #scroll-section-2 .sticky-elem,
 body#show-scene-3 #scroll-section-3 .sticky-elem {
     display: block;
+}
+
+#scroll-section-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @media (min-width: 1024px) {
@@ -237,6 +256,7 @@ body#show-scene-3 #scroll-section-3 .sticky-elem {
     }
 
     .mid-message {
+        width: 1000px;
         font-size: 4vw;
     }
 

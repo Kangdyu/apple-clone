@@ -108,8 +108,25 @@
             objs: {
                 container: document.querySelector("#scroll-section-3"),
                 canvasCaption: document.querySelector(".canvas-caption"),
+                canvas: document.querySelector(".image-blend-canvas"),
+                context: document
+                    .querySelector(".image-blend-canvas")
+                    .getContext("2d"),
+                imagesPath: [
+                    "./images/blend-image-1.jpg",
+                    "./images/blend-image-2.jpg",
+                ],
+                images: [],
             },
-            values: {},
+            values: {
+                rect1X: [0, 0, { start: 0, end: 0 }],
+                rect2X: [0, 0, { start: 0, end: 0 }],
+                blendHeight: [0, 0, { start: 0, end: 0 }],
+                canvasScale: [0, 0, { start: 0, end: 0 }],
+                rectStartY: 0,
+                canvasCaptionOpacity: [0, 1, { start: 0, end: 0 }],
+                canvasCaptionTranslateY: [20, 0, { start: 0, end: 0 }],
+            },
         },
     ];
 
@@ -125,6 +142,20 @@
             imgElem = new Image();
             imgElem.src = `./video/002/IMG_${7027 + i}.jpg`;
             sceneInfo[2].objs.videoImages.push(imgElem);
+        }
+
+        for (let i = 0; i < sceneInfo[3].objs.imagesPath.length; i++) {
+            imgElem = new Image();
+            imgElem.src = sceneInfo[3].objs.imagesPath[i];
+            sceneInfo[3].objs.images.push(imgElem);
+        }
+    }
+
+    function checkMenu() {
+        if (yOffset > 44) {
+            document.body.classList.add("local-nav-sticky");
+        } else {
+            document.body.classList.remove("local-nav-sticky");
         }
     }
 
@@ -393,10 +424,190 @@
                     )})`;
                 }
 
+                // scene3에서의 캔버스를 미리 그림
+                if (scrollRatio > 0.9) {
+                    const objs = sceneInfo[3].objs;
+                    const values = sceneInfo[3].values;
+                    const widthRatio = window.innerWidth / objs.canvas.width;
+                    const heightRatio = window.innerHeight / objs.canvas.height;
+                    let canvasScaleRatio;
+
+                    if (widthRatio <= heightRatio) {
+                        canvasScaleRatio = heightRatio;
+                    } else {
+                        canvasScaleRatio = widthRatio;
+                    }
+
+                    objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
+                    objs.context.fillStyle = "white";
+                    objs.context.drawImage(objs.images[0], 0, 0);
+
+                    const recalculatedInnerWidth =
+                        document.body.offsetWidth / canvasScaleRatio;
+                    const recalculatedInnerHeight =
+                        window.innerHeight / canvasScaleRatio;
+
+                    const whiteRectWidth = recalculatedInnerWidth * 0.15;
+                    values.rect1X[0] =
+                        (objs.canvas.width - recalculatedInnerWidth) / 2;
+                    values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+                    values.rect2X[0] =
+                        values.rect1X[0] +
+                        recalculatedInnerWidth -
+                        whiteRectWidth;
+                    values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+
+                    objs.context.fillRect(
+                        parseInt(values.rect1X[0]),
+                        0,
+                        parseInt(whiteRectWidth),
+                        recalculatedInnerHeight
+                    );
+                    objs.context.fillRect(
+                        parseInt(values.rect2X[0]),
+                        0,
+                        parseInt(whiteRectWidth),
+                        recalculatedInnerHeight
+                    );
+                }
                 break;
 
             case 3:
                 // console.log('3 play');
+                let step;
+                const widthRatio = window.innerWidth / objs.canvas.width;
+                const heightRatio = window.innerHeight / objs.canvas.height;
+                let canvasScaleRatio;
+
+                if (widthRatio <= heightRatio) {
+                    canvasScaleRatio = heightRatio;
+                } else {
+                    canvasScaleRatio = widthRatio;
+                }
+
+                objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
+                objs.context.drawImage(objs.images[0], 0, 0);
+
+                const recalculatedInnerWidth =
+                    document.body.offsetWidth / canvasScaleRatio;
+                const recalculatedInnerHeight =
+                    window.innerHeight / canvasScaleRatio;
+
+                if (!values.rectStartY) {
+                    // values.rectStartY = objs.canvas.getBoundingClientRect().top;
+                    values.rectStartY =
+                        objs.canvas.offsetTop +
+                        (objs.canvas.height -
+                            objs.canvas.height * canvasScaleRatio) /
+                            2;
+                    values.rect1X[2].start =
+                        window.innerHeight / 2 / scrollHeight;
+                    values.rect2X[2].start =
+                        window.innerHeight / 2 / scrollHeight;
+                    values.rect1X[2].end = values.rectStartY / scrollHeight;
+                    values.rect2X[2].end = values.rectStartY / scrollHeight;
+                }
+
+                const whiteRectWidth = recalculatedInnerWidth * 0.15;
+                values.rect1X[0] =
+                    (objs.canvas.width - recalculatedInnerWidth) / 2;
+                values.rect1X[1] = values.rect1X[0] - whiteRectWidth;
+                values.rect2X[0] =
+                    values.rect1X[0] + recalculatedInnerWidth - whiteRectWidth;
+                values.rect2X[1] = values.rect2X[0] + whiteRectWidth;
+
+                objs.context.fillStyle = "white";
+                objs.context.fillRect(
+                    parseInt(calcValues(values.rect1X, currentYOffset)),
+                    0,
+                    parseInt(whiteRectWidth),
+                    recalculatedInnerHeight
+                );
+                objs.context.fillRect(
+                    parseInt(calcValues(values.rect2X, currentYOffset)),
+                    0,
+                    parseInt(whiteRectWidth),
+                    recalculatedInnerHeight
+                );
+
+                if (scrollRatio < values.rect1X[2].end) {
+                    step = 1;
+                    objs.canvas.classList.remove("sticky");
+                } else {
+                    step = 2;
+
+                    values.blendHeight[0] = 0;
+                    values.blendHeight[1] = objs.canvas.height;
+                    values.blendHeight[2].start = values.rect1X[2].end;
+                    values.blendHeight[2].end =
+                        values.blendHeight[2].start + 0.2;
+
+                    const blendHeight = calcValues(
+                        values.blendHeight,
+                        currentYOffset
+                    );
+                    objs.context.drawImage(
+                        objs.images[1],
+                        0,
+                        objs.canvas.height - blendHeight,
+                        objs.canvas.width,
+                        blendHeight,
+                        0,
+                        objs.canvas.height - blendHeight,
+                        objs.canvas.width,
+                        blendHeight
+                    );
+
+                    objs.canvas.classList.add("sticky");
+                    objs.canvas.style.top = `-${
+                        (objs.canvas.height -
+                            objs.canvas.height * canvasScaleRatio) /
+                        2
+                    }px`;
+
+                    if (scrollRatio > values.blendHeight[2].end) {
+                        values.canvasScale[0] = canvasScaleRatio;
+                        values.canvasScale[1] =
+                            document.body.offsetWidth /
+                            (1.5 * objs.canvas.width);
+                        values.canvasScale[2].start = values.blendHeight[2].end;
+                        values.canvasScale[2].end =
+                            values.canvasScale[2].start + 0.2;
+
+                        objs.canvas.style.transform = `scale(${calcValues(
+                            values.canvasScale,
+                            currentYOffset
+                        )})`;
+                        objs.canvas.style.marginTop = `0px`;
+                    }
+
+                    if (
+                        scrollRatio > values.canvasScale[2].end &&
+                        values.canvasScale[2].end > 0
+                    ) {
+                        objs.canvas.classList.remove("sticky");
+                        objs.canvas.style.marginTop = `${scrollHeight * 0.4}px`;
+
+                        values.canvasCaptionOpacity[2].start =
+                            values.canvasScale[2].end;
+                        values.canvasCaptionOpacity[2].end =
+                            values.canvasCaptionOpacity[2].start + 0.1;
+                        values.canvasCaptionTranslateY[2].start =
+                            values.canvasCaptionOpacity[2].start;
+                        values.canvasCaptionTranslateY[2].end =
+                            values.canvasCaptionOpacity[2].end;
+
+                        objs.canvasCaption.style.opacity = calcValues(
+                            values.canvasCaptionOpacity,
+                            currentYOffset
+                        );
+                        objs.canvasCaption.style.transform = `translate3d(0, ${calcValues(
+                            values.canvasCaptionTranslateY,
+                            currentYOffset
+                        )}%, 0)`;
+                    }
+                }
+
                 break;
         }
     }
@@ -428,6 +639,7 @@
     window.addEventListener("scroll", () => {
         yOffset = window.pageYOffset;
         scrollLoop();
+        checkMenu();
     });
     window.addEventListener("load", () => {
         setLayout();
